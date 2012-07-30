@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>jQuery lightBox plugin</title>
+        <link rel="stylesheet" type="text/css" href="../style-projects-jquery.css" />
+        <!-- Arquivos utilizados pelo jQuery lightBox plugin -->
+        <script type="text/javascript" src="js/jquery.js">
+        </script>
+        <script type="text/javascript" src="js/jquery.lightbox-0.5.js">
+        </script>
+        <link rel="stylesheet" type="text/css" href="css/jquery.lightbox-0.5.css" media="screen" />
+        <!-- / fim dos arquivos utilizados pelo jQuery lightBox plugin -->
+        <!-- Ativando o jQuery lightBox plugin -->
+        <script type="text/javascript" src="js/main.js">
+        </script>
+        <style type="text/css">
+            /* jQuery lightBox plugin - Gallery style */
+            #gallery {
+                background-color: #444;
+                margin-left:auto;
+				margin-right:auto;
+				width:70%;
+            }
+			            
+            #gallery a:hover img {
+                border: 0px solid #fff;
+                border-width: 5px 5px 5px;
+                color: #fff;
+            }
+            
+            #gallery a:hover {
+                color: #fff;
+            }
+			
+			
+			#gallery img{
+				margin: 10px;
+			}
+			
+        </style>
+    </head>
+    <body>
+        <div id="gallery">
+        </div>
+    </body>
+</html>
