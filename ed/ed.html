@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>ECharts</title>
+</head>
+<body>
+  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+  <div id="main" style="height:400px"></div>
+  <!-- ECharts单文件引入 -->
+  <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+  <script type="text/javascript">
+    function EdXml()
+    {
+    this.x_axis_data = new Array();
+    this.y_axis_data = new Array();
+    this.desc_data = new Array();
+
+    var xmlFileName="ed.xml";
+    var xmlDoc='';
+    if (window.ActiveXObject){ // IE
+    var activeXNameList=new Array("MSXML2.DOMDocument.6.0","MSXML2.DOMDocument.5.0","MSXML2.DOMDocument.4.0","MSXML2.DOMDocument.3.0","MSXML2.DOMDocument","Microsoft.XMLDOM","MSXML.DOMDocument");
+    for(var h=0;h<activeXNameList.length;h++)
+		    {
+		    try{
+		    xmlDoc=new ActiveXObject(activeXNameList[h]);
+		    }catch(e){
+		    continue;
+		    }
+		    if(xmlDoc) break;
+		    }
+		    }else if(document.implementation && document.implementation.createDocument){ //非 IE
+		    xmlDoc=document.implementation.createDocument("","",null);
+		    }else{
+		    alert('can not create XML DOM object, update your browser please...');
+		    }
+		    xmlDoc.async=false;  //同步,防止后面程序处理时遇到文件还没加载完成出现的错误,故同步等XML文件加载完再做后面处理
+		    xmlDoc.load(xmlFileName); //加载XML
+
+		    if (window.ActiveXObject)
+		    {
+		    // todo
+		    }
+		    else
+		    {
+		    var nodeList=xmlDoc.getElementsByTagName("row");  // 非IE
+		    for(var i=0;i<nodeList.length;i++){
+				    this.x_axis_data.push(parseInt(nodeList[i].children[0].textContent));
+				    this.y_axis_data.push(parseInt(nodeList[i].children[1].textContent));
+				    this.desc_data.push(nodeList[i].children[2].textContent);
+				    }
+				    }
+				    }
+				    </script>
+  <script type="text/javascript">
+    var ed_xml = new EdXml();
+
+    // 路径配置
+    require.config({
+    paths: {
+    echarts: 'http://echarts.baidu.com/build/dist'
+    }
+    });
+
+    // 使用
+    require(
+    [
+    'echarts',
+    'echarts/chart/line', // 使用柱状图就加载bar模块，按需加载
+    'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
+    ],
+    function (ec) {
+    // 基于准备好的dom，初始化echarts图表
+    var myChart = ec.init(document.getElementById('main'));
+
+    var option = {
+    title : {
+    text: 'Emotion Diary',
+    subtext: 'be happy'
+    },
+    tooltip : {
+    trigger: 'axis'
+    },
+    legend: {
+    data:['ei',]
+    },
+    toolbox: {
+    show : true,
+    feature : {
+    mark : {show: false},
+    dataZoom : {show : true},
+    dataView : {show: true, readOnly: false},
+    magicType : {show: true, type: ['line', 'bar']},
+    restore : {show: true},
+    saveAsImage : {show: true}
+    }
+    },
+    calculable : true,
+    dataZoom : {
+    show : true,
+    realtime : true,
+    start : 20,
+    end : 80
+    },
+    xAxis : [
+    {
+    type : 'category',
+    boundaryGap : false,
+    data : ed_xml.x_axis_data,
+    }
+    ],
+    yAxis : [
+    {
+    type : 'value',
+    axisLabel : {
+    formatter: '{value}'
+    }
+    }
+    ],
+    series : [
+    {
+    name:'ei',
+    type:'line',
+    data:ed_xml.y_axis_data,
+    markPoint : {
+    data : [
+    {type : 'max', name: '最大值'},
+    {type : 'min', name: '最小值'}
+    ]
+    },
+    markLine : {
+    data : [
+    {type : 'average', name: '平均值'}
+    ]
+    }
+    },
+    ]
+    };
+
+    // 为echarts对象加载数据
+    myChart.setOption(option);
+
+    var ecConfig = require('echarts/config');//alert(ecConfig);
+    var zrEvent = require('zrender/tool/event');
+    myChart.on(ecConfig.EVENT.CLICK,function (param){
+    alert(ed_xml.desc_data[param.dataIndex]);
+    });
+
+
+    }
+    );
+  </script>
+</body>
