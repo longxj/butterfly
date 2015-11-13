@@ -169,7 +169,7 @@
 	var ecConfig = require('echarts/config');//alert(ecConfig);
 	var zrEvent = require('zrender/tool/event');
 	myChart.on(ecConfig.EVENT.CLICK,function (param){
-		var diary_dom = document.querySelector('[ng-controller=DiaryCtrl');
+		var diary_dom = document.querySelector('[ng-controller=DiaryCtrl]');
 		var $scope = angular.element(diary_dom).scope();
 		$scope.update({		
 		diary_date : ed_xml.x_axis_data[param.dataIndex],
