@@ -1,59 +1,71 @@
 <!DOCTYPE html>
+<html>
 <head>
   <meta charset="utf-8">
-  <title>ECharts</title>
-</head>
-<body>
-  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-  <div id="main" style="height:400px"></div>
+  <title>EmotionDiary</title>
   <!-- ECharts单文件引入 -->
   <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+  <script src="http://code.angularjs.org/1.4.7/angular.js"></script>
   <script type="text/javascript">
+	
     function EdXml()
     {
-    this.x_axis_data = new Array();
-    this.y_axis_data = new Array();
-    this.desc_data = new Array();
+		this.x_axis_data = new Array();
+		this.y_axis_data = new Array();
+		this.desc_data = new Array();
 
-    var xmlFileName="ed.xml";
-    var xmlDoc='';
-    if (window.ActiveXObject){ // IE
-    var activeXNameList=new Array("MSXML2.DOMDocument.6.0","MSXML2.DOMDocument.5.0","MSXML2.DOMDocument.4.0","MSXML2.DOMDocument.3.0","MSXML2.DOMDocument","Microsoft.XMLDOM","MSXML.DOMDocument");
-    for(var h=0;h<activeXNameList.length;h++)
-		    {
-		    try{
-		    xmlDoc=new ActiveXObject(activeXNameList[h]);
-		    }catch(e){
-		    continue;
-		    }
-		    if(xmlDoc) break;
-		    }
-		    }else if(document.implementation && document.implementation.createDocument){ //非 IE
+		var xmlFileName="ed.xml";
+		var xmlDoc='';
+		if (window.ActiveXObject){ // IE
+			var activeXNameList=new Array("MSXML2.DOMDocument.6.0","MSXML2.DOMDocument.5.0","MSXML2.DOMDocument.4.0","MSXML2.DOMDocument.3.0","MSXML2.DOMDocument","Microsoft.XMLDOM","MSXML.DOMDocument");
+			for(var h=0;h<activeXNameList.length;h++)
+			{
+				try{
+					xmlDoc=new ActiveXObject(activeXNameList[h]);
+				}catch(e){
+				continue;
+				}
+			if(xmlDoc) break;
+			}
+		}else if(document.implementation && document.implementation.createDocument){ //非 IE
 		    xmlDoc=document.implementation.createDocument("","",null);
-		    }else{
+		}else{
 		    alert('can not create XML DOM object, update your browser please...');
-		    }
-		    xmlDoc.async=false;  //同步,防止后面程序处理时遇到文件还没加载完成出现的错误,故同步等XML文件加载完再做后面处理
-		    xmlDoc.load(xmlFileName); //加载XML
+		}
+		xmlDoc.async=false;  //同步,防止后面程序处理时遇到文件还没加载完成出现的错误,故同步等XML文件加载完再做后面处理
+		xmlDoc.load(xmlFileName); //加载XML
 
-		    if (window.ActiveXObject)
-		    {
-		    // todo
-		    }
-		    else
-		    {
-		    var nodeList=xmlDoc.getElementsByTagName("row");  // 非IE
-		    for(var i=0;i<nodeList.length;i++){
-				    this.x_axis_data.push(parseInt(nodeList[i].children[0].textContent));
-				    this.y_axis_data.push(parseInt(nodeList[i].children[1].textContent));
-				    this.desc_data.push(nodeList[i].children[2].textContent);
-				    }
-				    }
-				    }
-				    </script>
+		if (window.ActiveXObject)
+		{
+            // todo
+		}
+		else
+		{
+			var rows=xmlDoc.children[0].children; // 非IE
+			for(var i=0;i<rows.length;i++){
+				this.x_axis_data.push(parseInt(rows[i].children[0].textContent));
+				this.y_axis_data.push(parseInt(rows[i].children[1].textContent));
+				this.desc_data.push(rows[i].children[2].textContent);
+			}
+		}
+	}
+  </script>
   <script type="text/javascript">
-    var ed_xml = new EdXml();
-
+	angular.module('DiaryApp', []).controller('DiaryCtrl', function ($scope)
+	{
+		$scope.diary_date = 0;
+		$scope.diary_ei = 0;
+		$scope.diary_desc = "";
+		$scope.update = function (data){
+			$scope.diary_date = data.diary_date;
+			$scope.diary_ei = data.diary_ei;
+			$scope.diary_desc = data.diary_desc;
+			$scope.$apply();
+		}
+	});
+	
+	var ed_xml = new EdXml();	
+  
     // 路径配置
     require.config({
     paths: {
@@ -87,7 +99,7 @@
     show : true,
     feature : {
     mark : {show: false},
-    dataZoom : {show : true},
+	dataZoom : {show : true},
     dataView : {show: true, readOnly: false},
     magicType : {show: true, type: ['line', 'bar']},
     restore : {show: true},
@@ -95,11 +107,9 @@
     }
     },
     calculable : true,
-    dataZoom : {
-    show : true,
-    realtime : true,
-    start : 20,
-    end : 80
+	dataZoom : {
+        show : true,
+        realtime : true, 
     },
     xAxis : [
     {
@@ -138,15 +148,34 @@
 
     // 为echarts对象加载数据
     myChart.setOption(option);
+	
+	var ecConfig = require('echarts/config');//alert(ecConfig);
+	var zrEvent = require('zrender/tool/event');
+	myChart.on(ecConfig.EVENT.CLICK,function (param){
+		var diary_dom = document.querySelector('[ng-controller=DiaryCtrl');
+		var $scope = angular.element(diary_dom).scope();
+		$scope.update({		
+		diary_date : ed_xml.x_axis_data[param.dataIndex],
+		diary_ei : ed_xml.y_axis_data[param.dataIndex],
+		diary_desc : ed_xml.desc_data[param.dataIndex]
+		});
 
-    var ecConfig = require('echarts/config');//alert(ecConfig);
-    var zrEvent = require('zrender/tool/event');
-    myChart.on(ecConfig.EVENT.CLICK,function (param){
-    alert(ed_xml.desc_data[param.dataIndex]);
-    });
-
-
+		// alert(ed_xml.desc_data[param.dataIndex]);
+	});
+	
+	
     }
     );
   </script>
+</head>
+<body>
+  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+  <div id="main" style="height:400px"></div>  
+  <div id="diary" style="height:400px" ng-controller="DiaryCtrl" ng-app='DiaryApp'>  
+  <p>日期：{{diary_date}}</p>
+  <p>心情：{{diary_ei}}</p>
+  <p>内容：{{diary_desc}}</p>
+  </div>  
 </body>
+</html>
+
