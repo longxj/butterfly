@@ -3,6 +3,23 @@
 <head>
   <meta charset="utf-8">
   <title>EmotionDiary</title>
+  <style type="text/css">
+  #diary {
+    margin-left: 2.5%; 
+	margin-right: 2.5%;
+	margin-top: 10px;
+  }
+  HR {
+  margin-top: 70px;
+  }
+  label {
+  color: rgb(105, 105, 105);
+  font-weight: bold;
+  }
+  p {
+  color: rgb(105, 105, 105);
+  }
+  </style>
   <!-- ECharts单文件引入 -->
   <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
   <script src="http://code.angularjs.org/1.4.7/angular.js"></script>
@@ -86,8 +103,8 @@
 
     var option = {
     title : {
-    text: 'Emotion Diary',
-    subtext: 'be happy'
+    text: '',
+    subtext: ''
     },
     tooltip : {
     trigger: 'axis'
@@ -170,12 +187,17 @@
 </head>
 <body>
   <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-  <div id="main" style="height:400px"></div>  
+  <h1 style="margin-left: 10px">Emotion Diary</h1>
+  <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2); margin-top: 10px" width="95%" color=#FFDEAD SIZE=10>
+  <div id="main" style="height:400px"></div> 
+  <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=2);" width="95%" color=#FFDEAD SIZE=10>  
   <div id="diary" style="height:400px" ng-controller="DiaryCtrl" ng-app='DiaryApp'>  
-  <p>日期：{{diary_date}}</p>
-  <p>心情：{{diary_ei}}</p>
-  <p>内容：{{diary_desc}}</p>
+  <p><label>日期：</label>{{diary_date}}</p>
+  <p><label>心情：</label>{{diary_ei}}</p>
+  <p><label>内容：</label></p>
+  <p>{{diary_desc}}</p>
   </div>  
 </body>
 </html>
+
 
